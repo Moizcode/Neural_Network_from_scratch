@@ -14,6 +14,15 @@ class DenseLayer:
         if self.activation_function == 'relu':
             self.a = np.maximum(0,self.z) 
             return self.a
+        if self.activation_function == 'tanh':
+            self.a = np.tanh(self.z)
+            return self.a
+        if self.activation_function == 'sigmoid':
+            self.a = 1/(1+np.exp(-self.z))
+            return self.a
+        if self.activation_function == 'softmax':
+            self.a = np.exp(self.z)/np.sum(np.exp(self.z))
+            print(np.sum(self.a))
         return self.z
     
     def backward_pass(self,dl_da,learning_rate):
@@ -37,6 +46,13 @@ class DenseLayer:
     def activation_loss(self,dl_da):
         if self.activation_function == 'relu':
             return dl_da * np.where(self.z>0,1,0)
+        
+        if self.activation_function == 'tanh':
+            return dl_da * (1- np.square(self.a))
+        
+        if self.activation_function == 'sigmoid':
+            return dl_da* self.a *(1-self.a)
+        
         return dl_da
     
 def calculate_mseloss(predicted,actual):
@@ -44,6 +60,7 @@ def calculate_mseloss(predicted,actual):
 
 def mseloss_derivative(y_pred,y_true):
     return 2*((y_pred-y_true)/y_true.size)
+
 
 def forward_pass_calling(layers_list,x):
     for layers in layers_list:
@@ -57,13 +74,13 @@ def backward_pass_calling(layers_list,loss_derivative,learning_rate = 0.2):
 
 
 # dummy data
-input_size= 150
+input_size= 50000
 input_variables = 3
 x1 = np.random.rand(input_size)
 x2 = np.random.rand(input_size)
 x3 = np.random.rand(input_size)
 
-y_true = 5*x1 + 2.4*x2 + 7.897*x3 + np.random.rand(input_size)
+y_true = 5*x1 + 2.4*x2 + 7.897*x3 + np.random.rand(input_size) *np.random.rand(input_size) 
 y_true = y_true.reshape(input_size,1)
 
 print("shape of y_true",np.shape(y_true))
@@ -71,10 +88,10 @@ input_X = np.dstack((x1,x2,x3))
 input_X = input_X.reshape(input_size,input_variables)
 
 # create layers
-layer1 = DenseLayer(3,6,'relu')
-layer2 = DenseLayer(6,4,'relu')
-layer3 = DenseLayer(4,2,'relu')
-layer4 = DenseLayer(2,1,'n')
+layer1 = DenseLayer(3,8,'tanh')
+layer2 = DenseLayer(8,14,'sigmoid')
+layer3 = DenseLayer(14,6,'relu')
+layer4 = DenseLayer(6,1,'n')
 
 layers_list = [layer1,layer2,layer3,layer4]
 
@@ -88,7 +105,7 @@ def train_function(epochs,layers_list,input_X,y_true):
 
 
 
-train_function(10,layers_list,input_X,y_true)
+train_function(25,layers_list,input_X,y_true)
 
 # ## forward_propagation
 # x = layer1.forward_pass(input_X)
