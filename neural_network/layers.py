@@ -23,14 +23,12 @@ class DenseLayer:
         self.a = self.activation(self.z)
         return self.a
 
-    def backward_pass(self, dl_da, learning_rate):
+    def backward_pass(self, dl_da):
         dl_dz = self.activation_loss(dl_da)
-        dl_dw = np.dot(self.input.T, dl_dz)
-        dl_db = np.sum(dl_dz, axis=0, keepdims=True)
+        self.dweights = np.dot(self.input.T, dl_dz)
+        self.dbias = np.sum(dl_dz, axis=0, keepdims=True)
         dl_dx = np.dot(dl_dz, self.weight_matrix.T)
 
-        self.weight_matrix -= learning_rate * dl_dw
-        self.bias -= learning_rate * dl_db
         return dl_dx
 
     def activation_loss(self, dl_da):

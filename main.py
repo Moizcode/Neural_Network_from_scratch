@@ -1,7 +1,7 @@
 import numpy as np
 
 from neural_network import DenseLayer, NeuralNetwork
-
+from neural_network import SGD
 
 def main():
     input_size = 20000
@@ -15,7 +15,7 @@ def main():
         + 7.897 * x3
         + np.random.rand(input_size) * np.random.rand(input_size)
     ).reshape(input_size, 1)
-    input_X = np.column_stack((x1, x2, x3))
+    input_X = np.column_stack((x1, x2, x3))  # (20000,3)
 
     model = NeuralNetwork([
         DenseLayer(3, 8, "relu"),
@@ -23,7 +23,8 @@ def main():
         DenseLayer(14, 6, "relu"),
         DenseLayer(6, 1),
     ])
-    model.train(input_X, y_true, epochs=100, learning_rate=0.01)
+    optimizer = SGD(learning_rate=0.01)
+    model.train(input_X, y_true, epochs=10, optimizer = optimizer,batch_size=64,shuffle=True)
 
 
 if __name__ == "__main__":
