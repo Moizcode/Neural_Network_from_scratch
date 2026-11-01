@@ -1,4 +1,4 @@
-from .losses import Loss
+from .losses import Loss, MeanSquaredError, SoftmaxCrossEntropy
 import numpy as np
 
 class NeuralNetwork:
@@ -17,7 +17,7 @@ class NeuralNetwork:
         for layer in reversed(self.layers):
             loss_derivative = layer.backward_pass(loss_derivative)
 
-    def train(self, X, y, epochs, optimizer, batch_size = None,shuffle = False):
+    def train(self, X, y, epochs, optimizer,loss_function = None, batch_size = None,shuffle = False):
 
         if len(X) == 0:
             raise ValueError("Empty data")
@@ -44,6 +44,9 @@ class NeuralNetwork:
         indices = np.arange(samples)
         
 
+        if loss_function is None:
+            loss_function = MeanSquaredError()
+
         for epoch in range(epochs):
             if shuffle:
                 np.random.shuffle(indices)
@@ -53,11 +56,11 @@ class NeuralNetwork:
                 batch_X = X[batch_indices]
                 batch_y = y[batch_indices]
                 y_pred = self.forward_pass(batch_X)
-                loss = Loss.MSE_Loss(y_pred, batch_y)
+                loss = loss_function.forward(y_pred, batch_y)
 
                 batch_loss += (loss * len(batch_X))
 
-                loss_derivative = Loss.MSE_derivative(y_pred, batch_y)
+                loss_derivative = loss_function.backward(y_pred, batch_y)
                 self.backpropagation(loss_derivative)
                 optimizer.step(self.layers)
 

@@ -1,13 +1,15 @@
 # Neural network from scratch
 
 A small neural network built with NumPy. Supports dense layers, linear, ReLU,
-tanh and sigmoid activations, and mean squared error for regression.
+tanh and sigmoid activations, mean squared error for regression, and stable
+softmax cross-entropy for multiclass classification.
 
 ## Setup
 
 ```bash
 python -m pip install -r requirements.txt
 python main.py
+python -m examples.classification
 ```
 
 ## Structure
@@ -16,9 +18,11 @@ python main.py
 neural_network/
     activations.py    Activation functions and their derivatives
     layers.py         Dense layer, forward and backward passes
-    losses.py         Mean squared error and its derivative
+    losses.py         Regression and classification losses
+    optimizers.py     SGD parameter updates
     model.py          Layer sequencing and training
 main.py               Regression example
+examples/             Classification example
 experiments/          Small standalone experiments
 ```
 
@@ -33,8 +37,11 @@ model = NeuralNetwork([
 ])
 ```
 
-Training uses full batches and updates weights during backpropagation. Inputs
-have shape `(samples, features)` and targets have shape `(samples, outputs)`.
+Training supports full batches or mini-batches, with SGD updates after
+backpropagation. Inputs have shape `(samples, features)`. Regression targets have
+shape `(samples, outputs)`; classification targets are integer class IDs with
+shape `(samples,)`. Classification uses a linear output layer and
+`loss_function=SoftmaxCrossEntropy()`.
 Add activations in `activations.py`, layers in `layers.py`, and losses in
 `losses.py` as the project grows.
 

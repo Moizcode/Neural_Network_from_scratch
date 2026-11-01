@@ -32,6 +32,12 @@ def sigmoid(z):
 def sigmoid_derivative(z, output):
     return output * (1 - output)
 
+def softmax(logits):
+    #Numerical stability
+    z = logits- np.max(logits,axis=1,keepdims=True)
+
+    exp_z = np.exp(z)
+    return exp_z / np.sum(exp_z, axis=1, keepdims=True)
 
 ACTIVATIONS = {
     "NoActivation": (linear, linear_derivative),

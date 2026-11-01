@@ -24,7 +24,7 @@ def main():
         DenseLayer(6, 1),
     ])
     optimizer = SGD(learning_rate=0.01)
-    model.train(input_X, y_true, epochs=10, optimizer = optimizer,batch_size=64,shuffle=True)
+    model.train(input_X, y_true, epochs=10, optimizer = optimizer,loss_function = None, batch_size=64,shuffle=True)
 
 
 if __name__ == "__main__":
